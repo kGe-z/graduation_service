@@ -24,7 +24,7 @@ import Address from '@libs/db/model/address.model';
       useFactory: () => ({
         transport: process.env.MAILER_MODULE_TRANSPROT,
         defaults: {
-          from: '验证 <2942195657@qq.com>'
+          from: process.env.MAILER_MODULE_DEFAULT_FROM
         }
       })
     }),

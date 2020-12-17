@@ -17,7 +17,7 @@ import { CommentModule } from './comment/comment.module';
     AuthModule,
     CommentModule,
     // redis
-    RedisModule.register({ url: 'redis://localhost:6379' }),
+    RedisModule.register({ url: process.env.REDIS_DB_URL }),
     AddressModule,
     GoodsModule,
     OrderModule,

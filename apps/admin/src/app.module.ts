@@ -18,7 +18,7 @@ import { OrderModule } from './order/order.module';
     CommonModule,
     AuthModule,
     UserModule,
-    RedisModule.register({ url: 'redis://localhost:6379' }),
+    RedisModule.register({ url: process.env.REDIS_DB_URL }),
     GoodModule,
     BannerModule,
     OrderModule,

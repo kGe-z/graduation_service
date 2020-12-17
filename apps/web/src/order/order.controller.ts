@@ -97,7 +97,7 @@ export class OrderController {
      */
     const date = Date.now()
     await // 配置回调接口
-    this.formData.addField('notifyUrl', process.env.WEB_APY_NOTIFYURL) // 通知商家
+    this.formData.addField('notifyUrl', process.env.WEB_APY_NOTIFYURL) // 内网穿透通知商家
     this.formData.addField('returnUrl', process.env.WEB_APY_CART_RETURNURL) // 支付成功返回地址
 
     this.formData.addField('bizContent', {
@@ -159,7 +159,7 @@ export class OrderController {
      * 返回支付链接（PC支付接口）
      */
     await // 配置回调接口
-    this.formData.addField('notifyUrl', process.env.WEB_APY_NOTIFYURL) // 通知商家
+    this.formData.addField('notifyUrl', process.env.WEB_APY_NOTIFYURL) // 内网穿透通知商家
     this.formData.addField('returnUrl', process.env.WEB_APY_ORDER_RETURNURL) // 支付成功返回地址
 
     this.formData.addField('bizContent', {
