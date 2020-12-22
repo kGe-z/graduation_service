@@ -41,4 +41,8 @@ export default class Goods {
   @ApiProperty({ description: '商家' })
   @prop({ required: true, ref: 'Admin' })
   public business: Ref<Admin>
+
+  @ApiProperty({ description: '访问量' })
+  @prop({ default: 0 })
+  public visits: number
 }

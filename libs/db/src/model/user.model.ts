@@ -1,3 +1,4 @@
+import Comment from '@libs/db/model/comment.model';
 import Goods from '@libs/db/model/goods.model'
 import Admin from '@libs/db/model/admin.model'
 import { modelOptions, prop, Ref } from '@typegoose/typegoose'
@@ -53,10 +54,14 @@ export default class User {
   public status: boolean
 
   @ApiProperty({ description: '关注的商家' })
-  @prop({ ref: 'Admin' })
+  @prop({ ref: 'Admin', default: [] })
   public likingBusiness: Ref<Admin>[]
 
   @ApiProperty({ description: '关注的商家' })
-  @prop({ ref: 'Goods' })
+  @prop({ ref: 'Goods', default: [] })
   public likingGoods: Ref<Goods>[]
+
+  @ApiProperty({ description: '赞的评论' })
+  @prop({ ref: 'Comment', default: [] })
+  public likingComment: Ref<Comment>[]
 }

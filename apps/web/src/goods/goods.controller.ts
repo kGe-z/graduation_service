@@ -1,3 +1,4 @@
+import Order from '@libs/db/model/order.model'
 import Admin from '@libs/db/model/admin.model'
 import Banner from '@libs/db/model/banner.model'
 import Goods from '@libs/db/model/goods.model'
@@ -25,12 +26,40 @@ export class GoodsController {
     private readonly bannerModel: ReturnModelType<typeof Banner>,
     @InjectModel(Admin)
     private readonly adminModel: ReturnModelType<typeof Admin>,
+    @InjectModel(Order)
+    private readonly orderModel: ReturnModelType<typeof Order>,
   ) {}
 
   @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: '获取商品' })
-  async info(@Param('id') id) {
-    return await this.goodsModel
+  @UseGuards(JwtAuthGuard) // jwt 验证
+  async info(@Param('id') id, @Req() req) {
+    /* 访问量自增 +1 */
+    await this.goodsModel.findByIdAndUpdate(id, {
+      $inc: { visits: 1 },
+    })
+
+    const user_id = req.user._id
+    const orders = await this.orderModel.find({
+      user_id,
+    })
+
+    /* 单向冒泡 判断是否存在 */
+    let buied = false
+    for (let i = 0; i < orders.length; i++) {
+      const current = orders[i].goods
+      let mark = false
+      for (let j = 0; j < current.length; j++) {
+        if (current[j].good_id === id) {
+          buied = mark = true
+          break
+        }
+      }
+      if (mark) break
+    }
+
+    const data = await this.goodsModel
       .findById(id)
       .where({ status: true })
       .select({
@@ -42,6 +71,8 @@ export class GoodsController {
         stock: 1,
       })
       .populate('business', 'avatar name')
+
+    return { data, buied }
   }
 
   @Post()
@@ -93,7 +124,12 @@ export class GoodsController {
       goods.push(current)
     }
 
-    const hot = await this.goodsModel.aggregate([{ $sample: { size: 10 } }])
+    // 随机生成 10 条数据
+    // const hot = await this.goodsModel.aggregate([{ $sample: { size: 10 } }])
+    const hot = await this.goodsModel
+      .find()
+      .sort({ visits: -1 })
+      .limit(10)
     const banner = await this.bannerModel.find()
 
     return {

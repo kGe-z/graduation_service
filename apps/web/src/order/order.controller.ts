@@ -95,7 +95,13 @@ export class OrderController {
     /**
      * 返回支付链接（PC支付接口）
      */
-    const date = Date.now()
+    
+    let trade = ''
+    for (let i = 0; i < 3; i++) {
+      trade += Math.round(Math.random() * 10)
+    }
+    const date = Date.now() + trade
+
     await // 配置回调接口
     this.formData.addField('notifyUrl', process.env.WEB_APY_NOTIFYURL) // 内网穿透通知商家
     this.formData.addField('returnUrl', process.env.WEB_APY_CART_RETURNURL) // 支付成功返回地址
@@ -114,7 +120,7 @@ export class OrderController {
       address_id,
       total_amount: (+total_amount).toFixed(2),
       user_id,
-      out_trade_no: date + '',
+      out_trade_no: date,
       del: false,
       status: 1,
     }
@@ -272,6 +278,8 @@ export class OrderController {
   @ApiOperation({ summary: '删除订单' })
   @UseGuards(JwtAuthGuard) // jwt 验证
   async del(@Param('id') id) {
-    await this.orderModel.findByIdAndRemove(id)
+    await this.orderModel.findByIdAndUpdate(id, {
+      del: true,
+    })
   }
 }

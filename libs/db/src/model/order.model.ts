@@ -1,7 +1,9 @@
 import { modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { ApiProperty } from '@nestjs/swagger'
-import User from './user.model'
-import Address from './address.model'
+
+import Goods from '@libs/db/model/goods.model';
+import Address from '@libs/db/model/address.model';
+import User from '@libs/db/model/user.model';
 
 @modelOptions({
   schemaOptions: { timestamps: true },

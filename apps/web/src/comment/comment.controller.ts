@@ -42,28 +42,32 @@ export class CommentController {
         goods,
         ...body,
       })
-    } catch (error) {
-      console.log(error)
-    }
+    } catch (error) {}
   }
 
   @Get(':gid')
   @ApiOperation({ summary: '获取商品评论' })
-  async commonList(@Param('gid') gid, @Query('cid') cid) {
+  async commonList(@Param('gid') gid) {
     const goods = gid
 
-    const root = JSON.parse(JSON.stringify(await this.commentModel
-      .find({
-        goods,
-        rootComment: null,
-      })
-      .populate('commentator')))
+    const root = JSON.parse(
+      JSON.stringify(
+        await this.commentModel
+          .find({
+            goods,
+            rootComment: null,
+          })
+          .populate('commentator'),
+      ),
+    )
 
     for (let i = 0; i < root.length; i++) {
-      root[i].children = await this.commentModel.find({
-        goods,
-        rootComment: root[i]._id,
-      }).populate('commentator replyTo')
+      root[i].children = await this.commentModel
+        .find({
+          goods,
+          rootComment: root[i]._id,
+        })
+        .populate('commentator replyTo')
     }
 
     return root
@@ -75,8 +79,7 @@ export class CommentController {
   @UseGuards(JwtAuthGuard) // jwt 验证
   async del(@Param('cid') id, @Req() req) {
     const commentator = req.user._id
-    console.log(id)
-
+    
     if (this.Compare(commentator, id)) {
       await this.commentModel.findByIdAndRemove(id)
     }

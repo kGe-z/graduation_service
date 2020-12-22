@@ -26,4 +26,8 @@ export default class Comment {
   @ApiProperty({ description: '内容' })
   @prop({})
   public content: string
+
+  @ApiProperty({ description: '被赞次数' })
+  @prop({ default: 0 })
+  public voteCount: number
 }

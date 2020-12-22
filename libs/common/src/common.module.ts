@@ -14,7 +14,6 @@ import { DbModule } from '@libs/db'
     // }),
     DbModule,
   ],
-  providers: [],
   exports: [],
 })
 export class CommonModule {}

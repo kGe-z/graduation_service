@@ -1,3 +1,4 @@
+import Comment from '@libs/db/model/comment.model'
 import {
   Controller,
   Get,
@@ -36,6 +37,8 @@ export class AuthController {
     private readonly mailerService: MailerService,
     private redisService: RedisService,
     @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>,
+    @InjectModel(Comment)
+    private readonly commentModel: ReturnModelType<typeof Comment>,
   ) {
     this.getClient()
   }
@@ -74,6 +77,7 @@ export class AuthController {
         phone: user.phone,
         likingGoods: user.likingGoods,
         likingBusiness: user.likingBusiness,
+        likingComment: user.likingComment
       },
     }
   }
@@ -104,9 +108,12 @@ export class AuthController {
       user: {
         sex: user.sex,
         name: user.name,
+        email: user.email,
+        phone: user.phone,
         avatar: user.avatar,
         likingGoods: user.likingGoods,
         likingBusiness: user.likingBusiness,
+        likingComment: user.likingComment
       },
     }
   }
@@ -250,7 +257,7 @@ export class AuthController {
   async followBusiness(@Param('id') id, @Req() req) {
     const follow = req.user.likingBusiness
     const index = follow.findIndex(item => item.toString() === id)
-    console.log(index)
+
     if (index === -1) follow.push(id)
     else follow.splice(index, 1)
 
@@ -275,6 +282,27 @@ export class AuthController {
     })
   }
 
+  @Put('follow/comments/:id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '点赞' })
+  @UseGuards(JwtAuthGuard) // jwt 验证
+  async like(@Req() req, @Param('id') id) {
+    const follow = req.user.likingComment
+
+    const index = follow.findIndex(item => item.toString() === id)
+
+    if (index === -1) follow.push(id)
+    else follow.splice(index, 1)
+
+    await this.userModel.findByIdAndUpdate(req.user._id, {
+      likingComment: follow,
+    })
+
+    await this.commentModel.findByIdAndUpdate(id, {
+      $inc: { voteCount: index === -1 ? 1 : -1 },
+    })
+  }
+
   @Get('follow/business')
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取收藏商家' })
@@ -291,7 +319,10 @@ export class AuthController {
   @ApiOperation({ summary: '获取收藏商品' })
   @UseGuards(JwtAuthGuard) // jwt 验证
   async GetFollowGoods(@Req() req) {
-    return await this.userModel.findById(req.user._id).select('likingGoods').populate('likingGoods')
+    return await this.userModel
+      .findById(req.user._id)
+      .select('likingGoods')
+      .populate('likingGoods')
   }
 
   /* 比较验证码 */
