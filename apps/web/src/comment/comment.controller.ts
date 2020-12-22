@@ -15,7 +15,7 @@ import { InjectModel } from 'nestjs-typegoose'
 import { ReturnModelType } from '@typegoose/typegoose'
 import Comment from '@libs/db/model/comment.model'
 import Goods from '@libs/db/model/goods.model'
-import { JwtAuthGuard } from 'apps/admin/src/auth/guard/jwt.guard'
+import { JwtAuthGuard } from 'apps/web/src/auth/guard/jwt.guard'
 import { Unauthorized } from '@libs/common/error/exception'
 
 @Controller('comment')

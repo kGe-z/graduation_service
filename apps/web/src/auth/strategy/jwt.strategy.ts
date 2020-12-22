@@ -21,6 +21,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt'){
 
   async validate(payload: JwtInterface) {
     const _id = payload._id
+    
+
     const user = await this.userModel.findById(_id)
     if(!user) throw new Unauthorized('token 错误')
     

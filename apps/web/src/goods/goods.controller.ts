@@ -11,10 +11,9 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ReturnModelType } from '@typegoose/typegoose'
 import { InjectModel } from 'nestjs-typegoose'
-import { JwtAuthGuard } from '../auth/guard/jwt.guard'
 
 @Controller('goods')
 @ApiTags('商品')
@@ -31,32 +30,33 @@ export class GoodsController {
   ) {}
 
   @Get(':id')
-  @ApiBearerAuth()
   @ApiOperation({ summary: '获取商品' })
-  @UseGuards(JwtAuthGuard) // jwt 验证
   async info(@Param('id') id, @Req() req) {
     /* 访问量自增 +1 */
     await this.goodsModel.findByIdAndUpdate(id, {
       $inc: { visits: 1 },
     })
 
-    const user_id = req.user._id
-    const orders = await this.orderModel.find({
-      user_id,
-    })
-
-    /* 单向冒泡 判断是否存在 */
+    const user_id = req.user && req.user._id
     let buied = false
-    for (let i = 0; i < orders.length; i++) {
-      const current = orders[i].goods
-      let mark = false
-      for (let j = 0; j < current.length; j++) {
-        if (current[j].good_id === id) {
-          buied = mark = true
-          break
+
+    if (user_id) {
+      const orders = await this.orderModel.find({
+        user_id,
+      })
+
+      /* 单向冒泡 判断是否存在 */
+      for (let i = 0; i < orders.length; i++) {
+        const current = orders[i].goods
+        let mark = false
+        for (let j = 0; j < current.length; j++) {
+          if (current[j].good_id === id) {
+            buied = mark = true
+            break
+          }
         }
+        if (mark) break
       }
-      if (mark) break
     }
 
     const data = await this.goodsModel
