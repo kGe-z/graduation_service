@@ -114,6 +114,7 @@ export class OrderController {
         {},
         { formData: this.formData },
       )
+      console.log(result);
       
       request(result)
     }
@@ -141,6 +142,7 @@ export class OrderController {
         updatedAt: 1,
         out_trade_no: 1,
         user_id: 1,
+        status: 1
       })
       .populate('address_id', 'address detailed phone name')
       .populate('user_id', 'avatar name')

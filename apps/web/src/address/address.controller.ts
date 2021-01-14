@@ -109,9 +109,8 @@ export class AddressController {
   @ApiBody({})
   async del(@Param('id') id, @Req() req) {
     const user_id = req.user._id
-
     const address = await this.addressModel.findById(id)
-    if (address.user_id !== user_id) throw new Unauthorized()
+    if (address.user_id.toString() !== user_id.toString()) throw new Unauthorized()
 
     await this.addressModel.findByIdAndDelete(id)
   }

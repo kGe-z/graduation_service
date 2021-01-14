@@ -81,7 +81,7 @@ export class GoodsController {
     const { page, c } = body
     const data = await this.goodsModel
       .find({
-        category: +c,
+        category: +c
       })
       .skip((page - 1) * 20)
       .limit(20)

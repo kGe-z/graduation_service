@@ -39,12 +39,12 @@ export class UserController {
       phone: 1,
     }
 
-    let obj
+    let obj = {}
 
     if (typeof status === 'boolean') obj = { status }
     if (JSON.stringify(params) !== '{}') {
       for (let key in params) {
-        obj.$or = [{ [key]: new RegExp(params[key], 'i') }]
+        obj['$or'] = [{ [key]: new RegExp(params[key], 'i') }]
       }
     }
 
